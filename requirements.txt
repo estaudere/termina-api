@@ -9,5 +9,4 @@ flask-restful==0.3.8
 pandas==1.2.3
 sklearn==0.0
 spotipy==2.17.1
-flask==1.1.2
 Flask-Cors==3.0.10
