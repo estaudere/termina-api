@@ -18,7 +18,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 auth = SpotifyOAuth(CLIENT_ID,
                     CLIENT_SECRET, 
-                    redirect_uri ="http://termina-api-1.estaudere.repl.co/callback/q", 
+                    redirect_uri ="https://cai-termina-api.herokuapp.com/callback/q", 
                     scope="user-library-read user-read-recently-played")
 
 
