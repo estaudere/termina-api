@@ -187,7 +187,7 @@ def run_model():
     }
   else:
     return {
-      "message": error
+      "message": "error, try authenticating first"
     }
 
 
