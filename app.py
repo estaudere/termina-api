@@ -114,76 +114,81 @@ def run_model():
 
 
   token_info = auth.get_cached_token()
-  
-  token = token_info['access_token']
 
-  sp = spotipy.client.Spotify(auth=token)
+  if (token_info):
+    token = token_info['access_token']
 
-  songs = sp.current_user_saved_tracks(limit=20)
+    sp = spotipy.client.Spotify(auth=token)
 
-  items = songs['items']
-  ids = []
+    songs = sp.current_user_saved_tracks(limit=20)
 
-  for item in items:
-      ids.append(item['track']['id'])
+    items = songs['items']
+    ids = []
 
-  song_info = sp.audio_features(ids)
+    for item in items:
+        ids.append(item['track']['id'])
 
-  def get_list(ls, ls_label):
-    for song in song_info:
-      ls.append(song[ls_label])
+    song_info = sp.audio_features(ids)
 
-
-  # add features to a dictionary for easy dataframe conversion
-  features_dict = {}
-  danceability = []
-  energy = []
-  loudness = []
-  speechiness = []
-  acousticness = []
-  liveness = []
-  valence = []
-  tempo = []
-  instrumentalness = []
-
-  get_list(danceability, "danceability")
-  get_list(energy, "energy")
-  get_list(loudness, "loudness")
-  get_list(speechiness, "speechiness")
-  get_list(acousticness, "acousticness")
-  get_list(liveness, "liveness")
-  get_list(valence, "valence")
-  get_list(tempo, "tempo")
-  get_list(instrumentalness, "instrumentalness")
-
-  features_dict["danceability"] = danceability
-  features_dict["energy"] = energy
-  features_dict["loudness"] = loudness
-  features_dict["speechiness"] = speechiness
-  features_dict["acousticness"] = acousticness
-  features_dict["liveness"] = liveness
-  features_dict["valence"] = valence
-  features_dict["tempo"] = tempo
-  features_dict["instrumentalness"] = instrumentalness
-
-  songs_features = pd.DataFrame.from_dict(features_dict)
-
-  loudness_val = songs_features[['loudness']].values
-  min_max_scaler = preprocessing.MinMaxScaler()
-  loudness_scaled = min_max_scaler.fit_transform(loudness_val)
-  songs_features['loudness'] = pd.DataFrame(loudness_scaled)
-
-  tempo_val = songs_features[['tempo']].values
-  min_max_scaler = preprocessing.MinMaxScaler()
-  tempo_scaled = min_max_scaler.fit_transform(tempo_val)
-  songs_features['tempo'] = pd.DataFrame(tempo_scaled)
+    def get_list(ls, ls_label):
+      for song in song_info:
+        ls.append(song[ls_label])
 
 
-  label = predict(songs_features)
-  return {
-    "STATUS": 202,
-    "message": label
-  }
+    # add features to a dictionary for easy dataframe conversion
+    features_dict = {}
+    danceability = []
+    energy = []
+    loudness = []
+    speechiness = []
+    acousticness = []
+    liveness = []
+    valence = []
+    tempo = []
+    instrumentalness = []
+
+    get_list(danceability, "danceability")
+    get_list(energy, "energy")
+    get_list(loudness, "loudness")
+    get_list(speechiness, "speechiness")
+    get_list(acousticness, "acousticness")
+    get_list(liveness, "liveness")
+    get_list(valence, "valence")
+    get_list(tempo, "tempo")
+    get_list(instrumentalness, "instrumentalness")
+
+    features_dict["danceability"] = danceability
+    features_dict["energy"] = energy
+    features_dict["loudness"] = loudness
+    features_dict["speechiness"] = speechiness
+    features_dict["acousticness"] = acousticness
+    features_dict["liveness"] = liveness
+    features_dict["valence"] = valence
+    features_dict["tempo"] = tempo
+    features_dict["instrumentalness"] = instrumentalness
+
+    songs_features = pd.DataFrame.from_dict(features_dict)
+
+    loudness_val = songs_features[['loudness']].values
+    min_max_scaler = preprocessing.MinMaxScaler()
+    loudness_scaled = min_max_scaler.fit_transform(loudness_val)
+    songs_features['loudness'] = pd.DataFrame(loudness_scaled)
+
+    tempo_val = songs_features[['tempo']].values
+    min_max_scaler = preprocessing.MinMaxScaler()
+    tempo_scaled = min_max_scaler.fit_transform(tempo_val)
+    songs_features['tempo'] = pd.DataFrame(tempo_scaled)
+
+
+    label = predict(songs_features)
+    return {
+      "STATUS": 202,
+      "message": label
+    }
+  else:
+    return {
+      "message": error
+    }
 
 
 if __name__ == '__main__':
